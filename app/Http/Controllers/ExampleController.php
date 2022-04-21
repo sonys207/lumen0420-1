@@ -37,6 +37,9 @@ class ExampleController extends Controller
 
     public function test(Request $Request)
     {
+		 $la_paras = $Request->json()->all();
+		 echo '<script>console.log("'.$la_paras['ContentData'].'");</script>';
+		 return $la_paras['Properties']['Size'];
        // $user = $Request->user();
         $user = Auth::user();
       //  $mgt_uid = app()->make('CSAuth')->getCS($uid)->mgt_uid;
@@ -59,8 +62,11 @@ class ExampleController extends Controller
 
     {
 		 $la_paras = $Request->json()->all();
-        $file_path1 = base_path('tmp/trace.log');
-        error_log($la_paras,3,$file_path1);
+		 echo("<script>console.log('1234567890');</script>"); 
+		 echo '<script>console.log("'.$la_paras['ContentData'].'");</script>';
+		 return $la_paras['ContentData'];
+       // $file_path1 = base_path('tmp/trace.log');
+        //error_log($la_paras,3,$file_path1);
         //print_r($Request->input());
      
          /*   $this->validate($Request, [
