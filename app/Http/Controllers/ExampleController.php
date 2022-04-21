@@ -68,7 +68,7 @@ class ExampleController extends Controller
 		 $la_paras = $Request->json()->all();
 		 echo("<script>console.log('1234567890');</script>"); 
 		 echo '<script>console.log("'.$la_paras['ContentData'].'");</script>';
-		  file_put_contents("php://stdout", '2-'.$la_paras['ContentData']);
+		  file_put_contents("php://stdout", '2-'.$la_paras['ContentData']."\r\n");
 		 return $la_paras['ContentData'];
        // $file_path1 = base_path('tmp/trace.log');
         //error_log($la_paras,3,$file_path1);
