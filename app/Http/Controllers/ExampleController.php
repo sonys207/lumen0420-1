@@ -73,11 +73,12 @@ class ExampleController extends Controller
         curl_setopt($cURL, CURLOPT_URL, "https://tie0502.servicebus.windows.net/magentoq/messages/head");
         curl_setopt($cURL, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($cURL, CURLOPT_HTTPHEADER, $header); 
-       // curl_setopt($cURL, CURLOPT_HEADER, 1);
+      //  curl_setopt($cURL, CURLOPT_HEADER, 1);
         curl_setopt($cURL, CURLOPT_POST, true);
         $json_response_data1 = curl_exec($cURL);
         $info = curl_getinfo($cURL);
         curl_close($cURL);
+       // dd( $json_response_data1);
         //echo "<pre>";//输出换行，等同于键盘ctrl+u
        // print_r("The sending message is ".json_decode($json_response_data1, true)['value']);
         file_put_contents("php://stdout", "The sending message response code is ".$info['http_code']."\r\n");
