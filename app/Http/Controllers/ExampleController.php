@@ -68,7 +68,7 @@ class ExampleController extends Controller
         $cURL = curl_init();
         $header=array(
              'Authorization:bearer '.$access_token,
-             'Content-Length: 0'
+             'Content-Length: 1000'
          );
        
         curl_setopt($cURL, CURLOPT_URL, "https://tie0502.servicebus.windows.net/magentoq/messages/head");
