@@ -56,7 +56,7 @@ class ExampleController extends Controller
         //dd($json_response_data);
        // print_r(json_decode($json_response_data, true));
         $access_token=json_decode($json_response_data, true)['access_token'];
-      //  print_r($access_token);
+        print_r($access_token);
 
         //send message to service bus with token
         $cURL = curl_init();
