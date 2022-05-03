@@ -63,6 +63,7 @@ class ExampleController extends Controller
        // print_r($access_token);
 
 
+
         //receive peek-lock message from service bus with token
         $cURL = curl_init();
         $header=array(
@@ -78,12 +79,12 @@ class ExampleController extends Controller
         $json_response_data1 = curl_exec($cURL);
         $info = curl_getinfo($cURL);
         curl_close($cURL);
-        echo "<pre>";//输出换行，等同于键盘ctrl+u
-       
+        //echo "<pre>";//输出换行，等同于键盘ctrl+u
+
         //print_r("The sending message is ".$json_response_data1); ContentData
+        file_put_contents("php://stdout", "The sending message response code is ".$info['http_code']."\r\n");
         file_put_contents("php://stdout", '20220503:Message content is '.json_decode($json_response_data1, true)['value']."\r\n"); 
-        echo "<pre>";//输出换行，等同于键盘ctrl+u
-        print_r("The sending message response code is ".$info['http_code']); 
+        //print_r("The sending message response code is ".$info['http_code']); 
         return 123;
     
     }
@@ -111,6 +112,7 @@ class ExampleController extends Controller
        // print_r(json_decode($json_response_data, true));
         $access_token=json_decode($json_response_data, true)['access_token'];
         print_r($access_token);
+
 
         //send message to service bus with token
         $cURL = curl_init();
