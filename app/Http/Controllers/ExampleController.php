@@ -67,7 +67,8 @@ class ExampleController extends Controller
         //receive peek-lock message from service bus with token
         $cURL = curl_init();
         $header=array(
-             'Authorization:bearer '.$access_token
+             'Authorization:bearer '.$access_token,
+             'Content-Length: 0'
          );
        
         curl_setopt($cURL, CURLOPT_URL, "https://tie0502.servicebus.windows.net/magentoq/messages/head");
