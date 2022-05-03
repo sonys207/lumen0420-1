@@ -67,7 +67,6 @@ class ExampleController extends Controller
         //receive peek-lock message from service bus with token
         $cURL = curl_init();
         $header=array(
-             'Content-Type:application/atom+xml;type=entry;charset=utf-8',
              'Authorization:bearer '.$access_token
          );
        
