@@ -35,12 +35,82 @@ class ExampleController extends Controller
         echo $result;
     }
 
+    public function SendServiceBM(Request $Request)
+    {
+        //get token
+        $postData = array (
+            'client_id' => '1abda0fc-cc2d-4c44-8518-4d856e8d7034',
+            'client_secret' => 'di88Q~FZ5c2.0YEwfGbq7HmuMtk4RAnHSTLOrbiy',
+            'grant_type' => 'client_credentials',
+            'resource' => 'https://servicebus.azure.net'
+        );
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL,"https://login.microsoftonline.com/2422ca93-d116-466c-b852-1e25f6301034/oauth2/token");
+        //本例$access_token从curl_exec($ch)的返回值中获得！！！
+        //需要设置curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1)！！！
+        //否则curl的结果直接输出到屏幕上，curl_exec($ch)的返回值是true，而不是数组！！！
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData); 
+        $json_response_data = curl_exec($ch);
+        curl_close($ch);
+        //dd($json_response_data);
+       // print_r(json_decode($json_response_data, true));
+        $access_token=json_decode($json_response_data, true)['access_token'];
+      //  print_r($access_token);
+
+        //send message to service bus with token
+        $cURL = curl_init();
+        $header=array(
+             'Content-Type:application/atom+xml;type=entry;charset=utf-8',
+             'Authorization:bearer '.$access_token,
+             'BrokerProperties:{"Label":"M22","State":"Active","TimeToLive":3600}'
+         );
+         $postdata2 = [
+            'alg'=>'RSA-OAEP-256',
+            'value'=>"This is a message-92"
+        ];
+        //转换为json格式
+        $postdatajson = json_encode($postdata2);
+        curl_setopt($cURL, CURLOPT_URL, "https://tie0502.servicebus.windows.net/magentoq/messages");
+        curl_setopt($cURL, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($cURL, CURLOPT_HTTPHEADER, $header); 
+        curl_setopt($cURL, CURLOPT_POSTFIELDS, $postdatajson);
+        curl_setopt($cURL, CURLOPT_POST, true);
+        $json_response_data1 = curl_exec($cURL);
+        $info = curl_getinfo($cURL);
+        curl_close($cURL);
+        echo "<pre>";//输出换行，等同于键盘ctrl+u
+        print_r($info);
+        print_r("The sending message response code is ".$info['http_code']); 
+        return 123;
+    }
+
+
+    public function testdeleteSBM(Request $Request)
+    {
+        $cURL = curl_init();
+        $header=array(
+             'Authorization:bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6ImpTMVhvMU9XRGpfNTJ2YndHTmd2UU8yVnpNYyIsImtpZCI6ImpTMVhvMU9XRGpfNTJ2YndHTmd2UU8yVnpNYyJ9.eyJhdWQiOiJodHRwczovL3NlcnZpY2VidXMuYXp1cmUubmV0IiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvNGViNmIyZjAtODI2Mi00ZjdjLWFmZjQtMWE4OGQ1YTllMzI1LyIsImlhdCI6MTY1MDkwMTM3MiwibmJmIjoxNjUwOTAxMzcyLCJleHAiOjE2NTA5MDUyNzIsImFpbyI6IkUyWmdZRmlyMVBic1g3TFIvTGxzaWRIZnk3b1lBQT09IiwiYXBwaWQiOiI0YmY5YWJkOS1hNmI2LTQxMzMtYTgxYi0xY2JiNmU3YjhhYTUiLCJhcHBpZGFjciI6IjEiLCJpZHAiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC80ZWI2YjJmMC04MjYyLTRmN2MtYWZmNC0xYTg4ZDVhOWUzMjUvIiwib2lkIjoiODJiZDRjMDItMWE5NC00MDA0LWE3M2ItZTNlOTE2OWJhMWE3IiwicmgiOiIwLkFYMEE4TEsyVG1LQ2ZFLXY5QnFJMWFuakpma09vWUJvZ1QxSnFfa3lsOFR2Ymp5YUFBQS4iLCJzdWIiOiI4MmJkNGMwMi0xYTk0LTQwMDQtYTczYi1lM2U5MTY5YmExYTciLCJ0aWQiOiI0ZWI2YjJmMC04MjYyLTRmN2MtYWZmNC0xYTg4ZDVhOWUzMjUiLCJ1dGkiOiJZNEZhNk5zcG9VZVVKTnVJMnNWZUFRIiwidmVyIjoiMS4wIn0.Zxy75KyCXxj1g9yiNa8w060YPCHyZm8vn6XtueJeluuK8w5LERoGROhsdzm3NKphpTqVKBT0fAR08czlvSOvbBQW9_7LbB3LVNOS-pZvbzGQtOBu8WJ6tnxvyYtKNadNSN89M-aV1WKUrsDeGd9AUf3-mPSxBEl3c3NWSx38AjRFhdeVM93MF0uW_bvfUtm42dxi34Z7DGHyFWL6CyO14NHsDs037xBrF-6n4fmJq_R8nrPcK60GCnDxMsXYuZsv1jnpfCLwaeDvzU67y79BPJh2GvS6fyvudm6QO4by03Km6P2XA0teB_jpMrZtB0eaXVcsXk_aZYQ7NNoq5VTxdA', 
+         );
+         $sequenceID='33';
+         $LockToken="48eb0dac-9a33-44f5-9060-d6be00f4b289";
+         curl_setopt($cURL, CURLOPT_URL, "https://tie0418.servicebus.windows.net/tonysq/messages/".$sequenceID."/".$LockToken);
+         curl_setopt($cURL, CURLOPT_RETURNTRANSFER, true);
+         curl_setopt($cURL, CURLOPT_HTTPHEADER, $header); 
+         curl_setopt($cURL, CURLOPT_CUSTOMREQUEST, "DELETE");
+         $json_response_data1 = curl_exec($cURL);
+         $info = curl_getinfo($cURL);
+         curl_close($cURL);
+         print_r("The sending message response code is ".$info['http_code']);
+        return 'successfully';
+    }
+
     public function test(Request $Request)
     {
 		 $la_paras = $Request->json()->all();
 		 echo '<script>console.log("'.$la_paras['ContentData'].'");</script>';
 		 //solution1 
-		 error_log($la_paras['Properties']['Postman-Token']);
+		 error_log($la_paras['Properties']['Postman-Token'],0);
 		//solution2
 		 file_put_contents("php://stdout", '1-'.$la_paras['ContentData']."\r\n");
 		 return $la_paras['Properties']['Size'];
