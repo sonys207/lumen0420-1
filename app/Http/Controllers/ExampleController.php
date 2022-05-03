@@ -38,8 +38,10 @@ class ExampleController extends Controller
     public function getnoteandm(Request $Request)
     {
         $la_paras = $Request->json()->all();
-        file_put_contents("php://stdout", '1-'.$la_paras['123']."\r\n");     
+        file_put_contents("php://stdout", '20220503:Message Count is '.$la_paras['messagea_count']."\r\n");     
     }
+
+
     public function SendServiceBM(Request $Request)
     {
         //get token
@@ -113,7 +115,7 @@ class ExampleController extends Controller
     public function test(Request $Request)
     {
 		 $la_paras = $Request->json()->all();
-		 echo '<script>console.log("'.$la_paras['ContentData'].'");</script>';
+		
 		 //solution1 
 		 error_log($la_paras['Properties']['Postman-Token'],0);
 		//solution2
