@@ -34,7 +34,13 @@ class ExampleController extends Controller
         );
         echo $result;
     }
+    
+    public function getnoteandm(Request $Request)
+    {
+        $la_paras = $Request->json()->all();
+        print_r($la_paras);
 
+    }
     public function SendServiceBM(Request $Request)
     {
         //get token
