@@ -37,12 +37,59 @@ class ExampleController extends Controller
     
     public function getnoteandm(Request $Request)
     {
+    
+
         $la_paras = $Request->json()->all();
-        file_put_contents("php://stdout", '20220503:Message Count is '.$la_paras['messagea_count']."\r\n");     
+        file_put_contents("php://stdout", '20220503:receive message action start '.$la_paras['messagea_count']."\r\n"); 
+        //get token
+        $postData = array (
+            'client_id' => 'cd2dad89-5fd5-48a3-9228-84db77502b04',
+            'client_secret' => 'VMT8Q~kp.ygb3OzUJsn2bQoJMQIytZLE1Q2M4cYV',
+            'grant_type' => 'client_credentials',
+            'resource' => 'https://servicebus.azure.net'
+        );
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL,"https://login.microsoftonline.com/2422ca93-d116-466c-b852-1e25f6301034/oauth2/token");
+        //本例$access_token从curl_exec($ch)的返回值中获得！！！
+        //需要设置curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1)！！！
+        //否则curl的结果直接输出到屏幕上，curl_exec($ch)的返回值是true，而不是数组！！！
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData); 
+        $json_response_data = curl_exec($ch);
+        curl_close($ch);
+        //dd($json_response_data);
+       // print_r(json_decode($json_response_data, true));
+        $access_token=json_decode($json_response_data, true)['access_token'];
+       // print_r($access_token);
+
+
+        //receive peek-lock message from service bus with token
+        $cURL = curl_init();
+        $header=array(
+             'Content-Type:application/atom+xml;type=entry;charset=utf-8',
+             'Authorization:bearer '.$access_token
+         );
+       
+        curl_setopt($cURL, CURLOPT_URL, "https://tie0502.servicebus.windows.net/magentoq/messages/head");
+        curl_setopt($cURL, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($cURL, CURLOPT_HTTPHEADER, $header); 
+     //   curl_setopt($cURL, CURLOPT_HEADER, 1);
+        curl_setopt($cURL, CURLOPT_POST, true);
+        $json_response_data1 = curl_exec($cURL);
+        $info = curl_getinfo($cURL);
+        curl_close($cURL);
+        echo "<pre>";//输出换行，等同于键盘ctrl+u
+       
+        //print_r("The sending message is ".$json_response_data1); ContentData
+        file_put_contents("php://stdout", '20220503:Message content is '.json_decode($json_response_data1, true)['value']."\r\n"); 
+        echo "<pre>";//输出换行，等同于键盘ctrl+u
+        print_r("The sending message response code is ".$info['http_code']); 
+        return 123;
+    
     }
 
 
-    public function SendServiceBM(Request $Request)
+    public function sendsbm(Request $Request)
     {
         //get token
         $postData = array (
@@ -74,7 +121,7 @@ class ExampleController extends Controller
          );
          $postdata2 = [
             'alg'=>'RSA-OAEP-256',
-            'value'=>"This is a message-92"
+            'value'=>"This is a audi Q8 from Tie!!!"
         ];
         //转换为json格式
         $postdatajson = json_encode($postdata2);

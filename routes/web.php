@@ -24,7 +24,7 @@ $router->group( ['middleware' => 'auth'], function() use ($router) {
 });
 $router->group( ['middleware' => 'auth:mgt_api'], function() use ($router) {
     $router->get('/test', 'ExampleController@test');
-    $router->get('/sendsbm', 'ExampleController@SendServiceBM');
+    $router->get('/sendsbm', 'ExampleController@sendsbm');
     $router->post('/getnoteandm', 'ExampleController@getnoteandm');
     $router->get('/testdeleteSBM', 'ExampleController@testdeleteSBM');
     $router->get('/userinfo', 'ExampleController@userinfo');
