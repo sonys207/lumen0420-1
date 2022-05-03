@@ -61,7 +61,7 @@ class ExampleController extends Controller
        // print_r(json_decode($json_response_data, true));
         $access_token=json_decode($json_response_data, true)['access_token'];
        // print_r($access_token);
-
+       file_put_contents("php://stdout", '20220503:receive token is '.$access_token."\r\n"); 
 
 
         //receive peek-lock message from service bus with token
@@ -75,7 +75,7 @@ class ExampleController extends Controller
         curl_setopt($cURL, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($cURL, CURLOPT_HTTPHEADER, $header); 
        // curl_setopt($cURL, CURLOPT_HEADER, 1);
-        curl_setopt($cURL, CURLOPT_POST, true);
+       // curl_setopt($cURL, CURLOPT_POST, true);
         $json_response_data1 = curl_exec($cURL);
         $info = curl_getinfo($cURL);
         curl_close($cURL);
