@@ -38,8 +38,7 @@ class ExampleController extends Controller
     public function getnoteandm(Request $Request)
     {
         $la_paras = $Request->json()->all();
-        return $la_paras;
-
+        file_put_contents("php://stdout", '1-'.$la_paras['123']."\r\n");     
     }
     public function SendServiceBM(Request $Request)
     {
