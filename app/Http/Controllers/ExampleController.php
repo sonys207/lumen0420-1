@@ -38,7 +38,7 @@ class ExampleController extends Controller
     public function getnoteandm(Request $Request)
     {
         $la_paras = $Request->json()->all();
-        print_r($la_paras);
+        return $la_paras;
 
     }
     public function SendServiceBM(Request $Request)
