@@ -35,12 +35,16 @@ class ExampleController extends Controller
         echo $result;
     }
     
-    public function getnoteandm(Request $Request)
+    public function getsbm(Request $Request)
     {
     
 
         $la_paras = $Request->json()->all();
         file_put_contents("php://stdout", '20220503:receive message action start '.$la_paras['messagea_count']."\r\n"); 
+        
+        //$la_paras['messagea_count']获取service bus queue中active message的数量，由此决定进行多少次的循环-
+        //当logic app调用此接口时，access token拿一次就好
+
         //get token
         $postData = array (
             'client_id' => 'cd2dad89-5fd5-48a3-9228-84db77502b04',
@@ -74,16 +78,47 @@ class ExampleController extends Controller
         curl_setopt($cURL, CURLOPT_URL, "https://tie0502.servicebus.windows.net/magentoq/messages/head");
         curl_setopt($cURL, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($cURL, CURLOPT_HTTPHEADER, $header); 
-      //  curl_setopt($cURL, CURLOPT_HEADER, 1);
+        curl_setopt($cURL, CURLOPT_HEADER, 1);
         curl_setopt($cURL, CURLOPT_POST, true);
         $json_response_data1 = curl_exec($cURL);
+        
         $info = curl_getinfo($cURL);
+        $header_size = curl_getinfo($cURL, CURLINFO_HEADER_SIZE);
         curl_close($cURL);
-       // dd( $json_response_data1);
+       // dd($json_response_data1);
+        file_put_contents("php://stdout", $json_response_data1);
+        
+    //对包含header和body的结果进行数据格式化处理---开始
+        //拆分出response中body的信息
+        $body = substr($json_response_data1, $header_size);
+        $body_array=json_decode($body);
+        // $body_array的类型是object，获取键对应值的方式$body_array->value！！！
+        //dd(gettype($body_array),$body_array->value);
+        
+        //拆分出response中header的信息
+        $header = substr($json_response_data1, 0, $header_size);
+        $header_array = preg_split('/(\r?\n)/', $header);
+        //获取包含“BrokerProperties”字符串的数组元素所在位置，结果为7
+        $j=0;
+        for ($i = 0; $i < count($header_array); ++$i) {
+            
+            if(strpos($header_array[$i],'BrokerProperties')!== false){ 
+                $j=$i;
+                break; 
+               }
+        }
+        //把数组中的7号元素通过":"拆分成2个元素---第2个元素为json，可以decode后获取某个键对应的值
+        $BrokerProperties=explode(":",$header_array[$j],2);
+        $BrokerProperties_Array=json_decode($BrokerProperties[1],true);
+        $BrokerProperties_Array_MessageId=$BrokerProperties_Array['MessageId'];
+        $BrokerProperties_Array_LockToken=$BrokerProperties_Array['LockToken'];
+        file_put_contents("php://stdout", "The MessageId is ".$BrokerProperties_Array_MessageId."\r\n");
+        file_put_contents("php://stdout", "The LockToken is ".$BrokerProperties_Array_LockToken."\r\n");
+    //对包含header和body的结果进行数据格式化处理---结束
+
         //echo "<pre>";//输出换行，等同于键盘ctrl+u
        // print_r("The sending message is ".json_decode($json_response_data1, true)['value']);
         file_put_contents("php://stdout", "The sending message response code is ".$info['http_code']."\r\n");
-        file_put_contents("php://stdout", '20220503:Message content is '.json_decode($json_response_data1, true)['value']."\r\n"); 
         //print_r("The sending message response code is ".$info['http_code']); 
         return 123;
     
@@ -119,8 +154,9 @@ class ExampleController extends Controller
         $header=array(
              'Content-Type:application/atom+xml;type=entry;charset=utf-8',
              'Authorization:bearer '.$access_token,
-             'BrokerProperties:{"Label":"M22","State":"Active","TimeToLive":3600}'
+           //  'BrokerProperties:{"Label":"M22","State":"Active","TimeToLive":3600}'
          );
+         //message content
          $postdata2 = [
             'alg'=>'RSA-OAEP-256',
             'value'=>"This is a audi Q8 from Tie!!!"
