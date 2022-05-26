@@ -150,8 +150,21 @@ class Controller extends BaseController
         dd($original_plaintext);
     }    
 
-    public function posttest(Request $Request)
+    public function handle_new_order(Request $Request)
     {
-        return 123;
+        return 1;
+    } 
+
+    public function handle_require_delivery(Request $Request)
+    {
+        return 2;
+    } 
+    public function handle_status_change(Request $Request)
+    {
+        return 3;
+    } 
+    public function info_change(Request $Request)
+    {
+        return 4;
     } 
 }

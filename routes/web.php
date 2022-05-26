@@ -24,7 +24,10 @@ $router->get('/sendsbmsasbatch', 'Controller@sendsbmsasbatch');
 $router->get('/testAES', 'Controller@testAES');
 $router->get('/testAES1', 'Controller@testAES1');
 $router->post('/receivesbmsas', 'Controller@receivesbmsas');
-$router->post('/posttest', 'Controller@posttest');
+$router->post('/handle_new_order', 'Controller@handle_new_order');
+$router->post('/handle_require_delivery','Controller@handle_require_delivery');
+$router->post('/handle_status_change','Controller@handle_status_change');
+$router->post('/info_change','Controller@info_change');
 //$router->post('/deletesbmsas', 'Controller@deletesbmsas');
 $router->group( ['middleware' => 'auth'], function() use ($router) {
 
