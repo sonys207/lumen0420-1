@@ -99,6 +99,7 @@ class ExampleController extends Controller
         $header = substr($json_response_data1, 0, $header_size);
         $header_array = preg_split('/(\r?\n)/', $header);
         //获取包含“BrokerProperties”字符串的数组元素所在位置，结果为7
+        //BrokerProperties中包含了MessageId、lockToken
         $j=0;
         for ($i = 0; $i < count($header_array); ++$i) {
             
@@ -158,7 +159,8 @@ class ExampleController extends Controller
          );
          //message content
          $postdata2 = [
-            'alg'=>'RSA-OAEP-256',
+            'type'=>'order_info', 
+            'alg'=>'RSA-OAEP-512',
             'value'=>"This is a audi Q8 from Tie!!!"
         ];
         //转换为json格式
@@ -174,6 +176,9 @@ class ExampleController extends Controller
         echo "<pre>";//输出换行，等同于键盘ctrl+u
         print_r($info);
         print_r("The sending message response code is ".$info['http_code']); 
+        //如果发送失败，将发送失败的信息（json格式）存入log。
+        //页面提供一个功能，将json格式的信息黏贴进去，点击发送可以trigger这段代码再次发送message到service bus queue
+        file_put_contents("php://stdout", 'Error(send message failure):  '.$postdatajson."\r\n");
         return 123;
     }
 

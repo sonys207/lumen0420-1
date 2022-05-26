@@ -19,12 +19,20 @@ $router->get('/', function () use ($router) {
 });
 
 $router->post('/save', 'ExampleController@save');
+$router->get('/sendsbmsas', 'Controller@sendsbmsas');
+$router->get('/sendsbmsasbatch', 'Controller@sendsbmsasbatch');
+$router->get('/testAES', 'Controller@testAES');
+$router->get('/testAES1', 'Controller@testAES1');
+$router->post('/receivesbmsas', 'Controller@receivesbmsas');
+$router->post('/posttest', 'Controller@posttest');
+//$router->post('/deletesbmsas', 'Controller@deletesbmsas');
 $router->group( ['middleware' => 'auth'], function() use ($router) {
 
 });
 $router->group( ['middleware' => 'auth:mgt_api'], function() use ($router) {
     $router->get('/test', 'ExampleController@test');
     $router->get('/sendsbm', 'ExampleController@sendsbm');
+   
     $router->post('/getsbm', 'ExampleController@getsbm');
     $router->get('/testdeleteSBM', 'ExampleController@testdeleteSBM');
     $router->get('/userinfo', 'ExampleController@userinfo');
